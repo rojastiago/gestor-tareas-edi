@@ -27,17 +27,23 @@ Probé en el tablero qué pasaba al completar una tarea y al simular un error de
 
 
 
+
 ## Incidencia 2
-- **Título de incidencia:** La carga sigue visible después del error del servicio.
-- **Pasos para reproducir:** Abrir el tablero, presionar «Simular error API» y observar el mensaje que aparece.
-- **Esperado / observado:** Esperaba que apareciera el error y terminara la carga. El mensaje de error apareció abajo, pero seguía mostrando «Consultando tareas».
-- **Herramienta usada (DevTools / consola / test):** Prueba manual en Chrome.
-- **Hipótesis y evidencia:** Es posible que el estado de carga quede activo al fallar la consulta. Vi el mensaje de error y el de carga al mismo tiempo.
-- **Archivo y función involucrada:** `app/index.tsx`, como punto de partida. Falta confirmar la función que maneja la consulta.
-- **Causa raíz:** Pendiente de confirmar.
-- **Corrección aplicada:** Pendiente.
-- **Prueba de regresión:** Simular nuevamente el error y comprobar que el mensaje aparezca y la carga termine.
-- **Estado:** Pendiente.
+- **Título de incidencia:** La carga no terminaba después de simular un error del servicio.
+- **Pasos para reproducir:** Abrí el tablero y presioné «Simular error API». Después de corregir el código, volví a realizar la misma prueba y también presioné «Recargar datos».
+- **Esperado / observado:** Esperaba que apareciera el mensaje de error y terminara la carga. Antes de la corrección, aparecía el error, pero seguía mostrando «Consultando tareas». Después del cambio, el mensaje apareció y la carga terminó correctamente.
+- **Herramienta usada (DevTools / consola / test):** Prueba manual en Chrome y consola de desarrollador.
+- **Hipótesis y evidencia:** Sospeché que la carga no se desactivaba cuando fallaba la consulta. En la consola apareció el error HTTP 503 simulado y el log que agregué. También se veía el indicador de carga junto con el mensaje de error.
+- **Archivo y función involucrada:** `app/index.tsx`, función `loadTasks`.
+- **Causa raíz:** El `setLoading(false)` estaba dentro del bloque `try`, por lo que solamente se ejecutaba cuando la consulta salía bien. Si ocurría un error, el programa pasaba al `catch` y la carga quedaba activa.
+- **Corrección aplicada:** Moví `setLoading(false)` a un bloque `finally` para que la carga termine tanto cuando la consulta funciona como cuando falla.
+- **Prueba de regresión:** Volví a simular el error y comprobé que desaparece «Consultando tareas» y aparece el mensaje de error. Después presioné «Recargar datos» y volvieron a mostrarse las cinco tareas.
+- **Estado:** Corregido.
+
+**Evidencia del error:**
+
+![Evidencia de la incidencia 2](evidencias/incidencia2_error_api.png)
+
 
 ## Incidencia 3
 - **Título de incidencia:** La búsqueda falla con mayúsculas y espacios externos.
@@ -74,7 +80,8 @@ En la primera ejecución de `npm test` pasaron 6 pruebas y fallaron 3.
 | Búsqueda | Las dos búsquedas devolvieron una lista vacía | Pendiente | Salida inicial de Jest |
 | Validación | La función aceptó un título de tres espacios | Pendiente | Salida inicial de Jest |
 | Actualización de estado | El tilde apareció al cambiar de pestaña y volver | Pendiente | Observación manual en Chrome |
-| Error de servicio | «Consultando tareas» siguió visible después del error | Pendiente | Observación manual en Chrome |
+| Error de servicio | El mensaje de carga seguía visible después del error | El indicador desaparece y permite recargar las cinco tareas | Captura de consola y prueba manual en Chrome |
+
 
 ## Conclusión y control de cambios
 - **Commit final (hash):** Pendiente.

@@ -22,18 +22,22 @@ export default function TaskManagerScreen() {
   const [feedback, setFeedback] = useState('');
   const nextId = useRef(100);
 
+
   async function loadTasks(simulateFailure = false) {
     setLoading(true);
     setError(null);
+
     try {
       const records = await fetchTasks(simulateFailure);
       setTasks(records);
-      setLoading(false);
     } catch (caught) {
       console.error('[taskService] No se cargaron las tareas', caught);
       setError('No pudimos cargar las tareas. Probá otra vez.');
+    } finally {
+      setLoading(false);
     }
   }
+
 
   useEffect(() => {
     void loadTasks();
@@ -43,15 +47,19 @@ export default function TaskManagerScreen() {
   const total = tasks.length;
   const completed = tasks.filter((task) => task.completed).length;
 
-function toggleTask(id: string) {
-  setTasks((currentTasks) =>
-    currentTasks.map((task) =>
-      task.id === id
-        ? { ...task, completed: !task.completed }
-        : task
-    )
-  );
-}
+  function toggleTask(id: string) {
+    const found = tasks.find((task) => task.id === id);
+
+    if (found) {
+      console.info('[Gestor] Cambio de estado', {
+        tarea: id,
+        estadoAnterior: found.completed
+      });
+
+      found.completed = !found.completed;
+      setTasks(tasks);
+    }
+  }
 
   function addTask() {
     if (!isValidTaskTitle(newTitle)) {
