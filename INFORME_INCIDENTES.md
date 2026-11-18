@@ -106,7 +106,7 @@ En la primera ejecución de `npm test` pasaron 6 pruebas y fallaron 3.
 
 ## Conclusión y control de cambios
 
-- **Commit final (hash):** Pendiente de generar.
+- **Commit final (hash):** df3f65b
 - **Mensaje del commit:** fix: corregir validacion de titulos y finalizar informe de incidencias
 - **Qué aprendí y cómo lo aplicaría a mi app final:** Con este trabajo aprendí a encontrar errores utilizando la consola, las pruebas automatizadas y las herramientas de desarrollo del navegador. También comprendí la importancia de actualizar correctamente el estado en React, manejar los errores de servicios, revisar las dependencias de useMemo y validar los datos antes de guardarlos. En mi aplicación final utilizaría estas herramientas para detectar problemas y comprobar que las correcciones no afecten otras funciones.
 
