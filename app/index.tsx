@@ -43,13 +43,15 @@ export default function TaskManagerScreen() {
   const total = tasks.length;
   const completed = tasks.filter((task) => task.completed).length;
 
-  function toggleTask(id: string) {
-    const found = tasks.find((task) => task.id === id);
-    if (found) {
-      found.completed = !found.completed;
-      setTasks(tasks);
-    }
-  }
+function toggleTask(id: string) {
+  setTasks((currentTasks) =>
+    currentTasks.map((task) =>
+      task.id === id
+        ? { ...task, completed: !task.completed }
+        : task
+    )
+  );
+}
 
   function addTask() {
     if (!isValidTaskTitle(newTitle)) {
