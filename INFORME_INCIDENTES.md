@@ -67,17 +67,27 @@ Probé en el tablero qué pasaba al completar una tarea y al simular un error de
 ![Búsqueda después](evidencias/incidencia3_busqueda_despues.png)
 
 
+
 ## Incidencia 4
-- **Título de incidencia:** La validación acepta un título compuesto solo por espacios.
-- **Pasos para reproducir:** Ejecutar `npm test` y revisar la prueba de `__tests__/taskValidation.test.ts` que usa un título de tres espacios.
-- **Esperado / observado:** La función debía devolver `false` para rechazar el título. Devolvió `true` y lo tomó como válido.
-- **Herramienta usada (DevTools / consola / test):** Jest.
-- **Hipótesis y evidencia:** La validación podría estar contando los espacios como contenido. La prueba mostró que tres espacios fueron suficientes para que devolviera `true`.
+- **Título de incidencia:** El formulario permitía ingresar tareas con títulos compuestos solamente por espacios.
+- **Pasos para reproducir:** Abrí el gestor, escribí tres espacios en el campo "Nueva tarea" y presioné "Agregar". También ejecuté las pruebas de validación con Jest.
+- **Esperado / observado:** Esperaba que el sistema rechazara los títulos que solamente contenían espacios. Antes de la corrección, la validación los aceptaba. Después del cambio, el formulario los rechaza correctamente.
+- **Herramienta usada (DevTools / consola / test):** Pruebas automatizadas con Jest y pruebas manuales en Chrome.
+- **Hipótesis y evidencia:** La función comprobaba únicamente que el título tuviera una longitud mayor que cero. En Jest, la prueba de títulos con espacios fallaba porque devolvía true cuando esperaba false.
 - **Archivo y función involucrada:** `src/utils/taskValidation.ts`, función `isValidTaskTitle`.
-- **Causa raíz:** Pendiente de confirmar.
-- **Corrección aplicada:** Pendiente.
-- **Prueba de regresión:** Comprobar que la función rechace un título de tres espacios y siga aceptando un título con palabras.
-- **Estado:** Pendiente.
+- **Causa raíz:** Se utilizaba `title.length > 0`, que considera válidos los espacios porque también son caracteres.
+- **Corrección aplicada:** Agregué `trim()` antes de comprobar la longitud del título, para eliminar los espacios al principio y al final.
+- **Prueba de regresión:** Ejecuté nuevamente las pruebas de validación y las tres pasaron. También comprobé en Chrome que no se puede agregar una tarea con solamente espacios, pero sí una con un título válido.
+- **Estado:** Corregido.
+
+**Evidencia antes de la corrección:**
+
+![Validación antes](evidencias/incidencia4_validacion_antes.png)
+
+**Evidencia después de la corrección:**
+
+![Validación después](evidencias/incidencia4_validacion_despues.png)
+
 
 ## Otras incidencias (opcional)
 
@@ -88,12 +98,16 @@ En la primera ejecución de `npm test` pasaron 6 pruebas y fallaron 3.
 | Prueba | Antes | Después | Evidencia |
 |---|---|---|---|
 | Búsqueda | No encontraba tareas con mayúsculas ni espacios y no actualizaba la lista | Las 4 pruebas de Jest pasaron y el buscador funciona correctamente en Chrome | Resultado de Jest y capturas antes y después |
-| Validación | La función aceptó un título de tres espacios | Pendiente | Salida inicial de Jest |
+| Validación | Aceptaba títulos compuestos únicamente por espacios | Las 3 pruebas de Jest pasaron y el formulario rechaza esos títulos en Chrome | Capturas de Jest antes y después y prueba manual en Chrome |
 | Actualización de estado | El tilde apareció al cambiar de pestaña y volver | Pendiente | Observación manual en Chrome |
 | Error de servicio | El mensaje de carga seguía visible después del error | El indicador desaparece y permite recargar las cinco tareas | Captura de consola y prueba manual en Chrome |
 
 
+
 ## Conclusión y control de cambios
-- **Commit final (hash):** Pendiente.
-- **Mensaje del commit:** Pendiente.
-- **Qué aprendí y cómo lo aplicaría a mi app final:** Pendiente de completar después de revisar el código y comprobar las correcciones.
+
+- **Commit final (hash):** Pendiente de generar.
+- **Mensaje del commit:** fix: corregir validacion de titulos y finalizar informe de incidencias
+- **Qué aprendí y cómo lo aplicaría a mi app final:** Con este trabajo aprendí a encontrar errores utilizando la consola, las pruebas automatizadas y las herramientas de desarrollo del navegador. También comprendí la importancia de actualizar correctamente el estado en React, manejar los errores de servicios, revisar las dependencias de useMemo y validar los datos antes de guardarlos. En mi aplicación final utilizaría estas herramientas para detectar problemas y comprobar que las correcciones no afecten otras funciones.
+
+Al finalizar las cuatro correcciones, ejecuté npm test y las 9 pruebas del proyecto pasaron correctamente.
