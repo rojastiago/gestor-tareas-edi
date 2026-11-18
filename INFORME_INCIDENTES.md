@@ -45,17 +45,27 @@ Probé en el tablero qué pasaba al completar una tarea y al simular un error de
 ![Evidencia de la incidencia 2](evidencias/incidencia2_error_api.png)
 
 
+
 ## Incidencia 3
-- **Título de incidencia:** La búsqueda falla con mayúsculas y espacios externos.
-- **Pasos para reproducir:** Ejecutar `npm test` y revisar las pruebas de búsqueda de `__tests__/taskFilters.test.ts`.
-- **Esperado / observado:** Las pruebas esperaban encontrar una tarea al buscar `VALIDAR` y al buscar `login` con dos espacios antes y después. En los dos casos se obtuvo una lista vacía.
-- **Herramienta usada (DevTools / consola / test):** Jest.
-- **Hipótesis y evidencia:** La búsqueda podría estar comparando el texto tal como se escribe. Fallaron las pruebas que usaron mayúsculas y espacios externos.
-- **Archivo y función involucrada:** `src/utils/taskFilters.ts`, función `filterTasks`.
-- **Causa raíz:** Pendiente de confirmar.
-- **Corrección aplicada:** Pendiente.
-- **Prueba de regresión:** Volver a ejecutar las dos pruebas y comprobar que cada búsqueda encuentre la tarea esperada.
-- **Estado:** Pendiente.
+- **Título de incidencia:** La búsqueda no encontraba correctamente las tareas.
+- **Pasos para reproducir:** Abrí el gestor y escribí "validar" en el buscador. La lista seguía mostrando todas las tareas. También probé búsquedas con mayúsculas y espacios.
+- **Esperado / observado:** Esperaba que apareciera solamente la tarea "Validar login". Antes no se filtraba correctamente la lista. Después de las correcciones, las búsquedas funcionan.
+- **Herramienta usada (DevTools / consola / test):** Pruebas manuales en Chrome y pruebas automatizadas con Jest.
+- **Hipótesis y evidencia:** Primero observé que el filtro no encontraba textos con mayúsculas o espacios. Después comprobé que, aunque las pruebas de Jest pasaban, la pantalla no actualizaba los resultados mientras escribía.
+- **Archivo y función involucrada:** `src/utils/taskFilters.ts`, función `filterTasks`, y `app/index.tsx`, cálculo de `visibleTasks` con `useMemo`.
+- **Causa raíz:** La función de búsqueda utilizaba `includes()` sin normalizar el texto. Además, faltaba `query` en las dependencias de `useMemo`, por lo que la lista no se actualizaba cuando cambiaba la búsqueda.
+- **Corrección aplicada:** Utilicé `trim()` y `toLowerCase()` para normalizar el texto. También agregué `query` a las dependencias de `useMemo`.
+- **Prueba de regresión:** Ejecuté las cuatro pruebas de `taskFilters.test.ts` y todas pasaron. Después comprobé en Chrome que el buscador filtra las tareas correctamente.
+- **Estado:** Corregido.
+
+**Evidencia antes de la corrección:**
+
+![Búsqueda antes](evidencias/incidencia3_busqueda_antes.png)
+
+**Evidencia después de la corrección:**
+
+![Búsqueda después](evidencias/incidencia3_busqueda_despues.png)
+
 
 ## Incidencia 4
 - **Título de incidencia:** La validación acepta un título compuesto solo por espacios.
@@ -77,7 +87,7 @@ En la primera ejecución de `npm test` pasaron 6 pruebas y fallaron 3.
 
 | Prueba | Antes | Después | Evidencia |
 |---|---|---|---|
-| Búsqueda | Las dos búsquedas devolvieron una lista vacía | Pendiente | Salida inicial de Jest |
+| Búsqueda | No encontraba tareas con mayúsculas ni espacios y no actualizaba la lista | Las 4 pruebas de Jest pasaron y el buscador funciona correctamente en Chrome | Resultado de Jest y capturas antes y después |
 | Validación | La función aceptó un título de tres espacios | Pendiente | Salida inicial de Jest |
 | Actualización de estado | El tilde apareció al cambiar de pestaña y volver | Pendiente | Observación manual en Chrome |
 | Error de servicio | El mensaje de carga seguía visible después del error | El indicador desaparece y permite recargar las cinco tareas | Captura de consola y prueba manual en Chrome |
